@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { Analytics } from "@vercel/analytics/react"
+import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { FiPlus, FiTrash2, FiSun, FiMoon, FiEdit2 } from 'react-icons/fi';
 import logo from './logo.png';
@@ -380,3 +381,4 @@ function App() {
 }
 
 export default App;
+<Analytics />
