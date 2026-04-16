@@ -258,7 +258,7 @@ function App() {
             )}
             {budget > 0 && totalSpent > budget * 0.8 && totalSpent <= budget && (
               <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-400 text-orange-700 dark:text-orange-300 px-3 py-2 rounded-lg text-sm">
-                ⚠️ 100% of budget used. Be careful!
+                ⚠️ 80% of budget used. Be careful!
               </div>
             )}
 
