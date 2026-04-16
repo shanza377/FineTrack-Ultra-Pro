@@ -261,6 +261,11 @@ function App() {
                 ⚠️ 80% of budget used. Be careful!
               </div>
             )}
+            {budget > 0 && totalSpent > budget * 1.0 && totalSpent <= budget && (
+              <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-400 text-orange-700 dark:text-orange-300 px-3 py-2 rounded-lg text-sm">
+                ⚠️ 100% of budget used. Consider reviewing your expenses.
+              </div>
+            )}
 
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               Showing: {selectedMonth} • {filteredExpenses.length} expenses
