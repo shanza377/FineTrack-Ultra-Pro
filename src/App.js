@@ -155,17 +155,17 @@ function App() {
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
         <div className="max-w-4xl mx-auto p-4">
 
-                    <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden rounded-lg drop-shadow-lg"><img 
-               src={logo} alt="FinTrack Logo" className="w-full h-full object-cover scale-145 object-center"/>
+              <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse">
+                <img src={logo} alt="FinTrack Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
               </div>
+              <h1 className="text-2xl md:text-3xl font-bold">FinTrack Pro</h1>
             </div>
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
               {darkMode? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
           </div>
-
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
             <div className="flex justify-between items-start mb-3">
               <div>
