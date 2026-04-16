@@ -65,7 +65,7 @@ function App() {
     if (editingId) {
       setExpenses(expenses.map(exp =>
         exp.id === editingId
-     ? {...exp, amount: parseFloat(amount), note, category }
+         ? {...exp, amount: parseFloat(amount), note, category }
           : exp
       ));
       setEditingId(null);
@@ -120,11 +120,12 @@ function App() {
     return expMonth === selectedMonth;
   });
 
-  const totalSpent = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const totalSpent = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  const budgetUsed = budget > 0? (totalSpent / budget) * 100 : 0;
 
   const chartData = categories.map(cat => ({
     name: cat.name,
-    value: filteredExpenses.filter(e => e.category === cat.name).reduce((sum, e) => sum + e.amount, 0),
+    value: filteredExpenses.filter(e => e.category === cat.name).reduce((sum, e) => sum + Number(e.amount), 0),
     color: cat.color
   })).filter(item => item.value > 0);
 
@@ -133,14 +134,13 @@ function App() {
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   }))];
 
-  // MONTHLY SUMMARY CALCULATION
   const monthlySummary = () => {
     if (selectedMonth === 'All' || filteredExpenses.length === 0) return null;
 
     const categoryTotals = categories.map(cat => ({
       name: cat.name,
       icon: cat.icon,
-      total: filteredExpenses.filter(e => e.category === cat.name).reduce((sum, e) => sum + e.amount, 0)
+      total: filteredExpenses.filter(e => e.category === cat.name).reduce((sum, e) => sum + Number(e.amount), 0)
     })).filter(c => c.total > 0).sort((a, b) => b.total - a.total);
 
     const topCategory = categoryTotals[0];
@@ -156,7 +156,7 @@ function App() {
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
         <div className="max-w-4xl mx-auto p-4">
 
-            <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
               <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse">
                 <img src={logo} alt="FinTrack Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
@@ -167,6 +167,7 @@ function App() {
               {darkMode? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
           </div>
+
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
             <div className="flex justify-between items-start mb-3">
               <div>
@@ -236,34 +237,37 @@ function App() {
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div
                     className={`h-2.5 rounded-full transition-all ${
-                      totalSpent / budget > 1
-                   ? 'bg-red-600'
-                        : totalSpent / budget > 0.8
-                   ? 'bg-orange-500'
+                      totalSpent >= budget
+                       ? 'bg-red-600'
+                        : budgetUsed >= 80
+                       ? 'bg-orange-500'
                         : 'bg-green-500'
                     }`}
-                    style={{ width: `${Math.min((totalSpent / budget) * 100, 100)}%` }}
+                    style={{ width: `${Math.min(budgetUsed, 100)}%` }}
                   ></div>
                 </div>
                 <p className="text-xs text-right mt-1 text-gray-500">
-                  {((totalSpent / budget) * 100).toFixed(0)}% used
+                  {Math.floor(budgetUsed)}% used
                 </p>
               </div>
             )}
 
             {budget > 0 && totalSpent > budget && (
               <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg text-sm">
-                ⚠️ Budget exceeded! {currency} {(totalSpent - budget).toFixed(2)} over budget
+                ⚠️ Budget exceeded! Rs {(totalSpent - budget).toFixed(2)} over budget
               </div>
             )}
-            {budget > 0 && totalSpent > budget * 0.8 && totalSpent <= budget && (
-              <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-400 text-orange-700 dark:text-orange-300 px-3 py-2 rounded-lg text-sm">
-                ⚠️ 80% of budget used. Be careful!
+
+
+            {budget > 0 && budgetUsed >= 80 && totalSpent < budget && (
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400 text-yellow-700 dark:text-yellow-300 px-3 py-2 rounded-lg text-sm mb-2">
+                ⚠️ Warning: 80% Budget Used
               </div>
             )}
-            {budget > 0 && totalSpent > budget * 1.0 && totalSpent <= budget && (
-              <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-400 text-orange-700 dark:text-orange-300 px-3 py-2 rounded-lg text-sm">
-                ⚠️ 100% of budget used. Consider reviewing your expenses.
+
+            {budget > 0 && totalSpent >= budget && (
+              <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg text-sm mb-2">
+                ⚠️ Alert: 100% Budget Used! Stop Spending
               </div>
             )}
 
@@ -272,7 +276,6 @@ function App() {
             </p>
           </div>
 
-          {/* Monthly Summary Card */}
           {summary && (
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-xl shadow-lg mb-6 text-white">
               <h3 className="text-xl font-semibold mb-3">📈 {selectedMonth} Summary</h3>
