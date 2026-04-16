@@ -376,9 +376,9 @@ function App() {
           </div>
         </div>
       </div>
+      <Analytics />
     </div>
   );
 }
 
 export default App;
-<Analytics />
