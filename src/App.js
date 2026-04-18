@@ -5,7 +5,7 @@ import { FiPlus, FiTrash2, FiSun, FiMoon, FiEdit2, FiSearch, FiRefreshCw } from 
 import logo from './logo.png';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
+import Charts from './components/charts';
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
@@ -142,13 +142,13 @@ function App() {
       if (transactionType === 'expense') {
         setExpenses(expenses.map(exp =>
           exp.id === editingId
-       ? {...exp, amount: parseFloat(amount), note, category }
+           ? {...exp, amount: parseFloat(amount), note, category }
             : exp
         ));
       } else {
         setIncomes(incomes.map(inc =>
           inc.id === editingId
-       ? {...inc, amount: parseFloat(amount), note }
+           ? {...inc, amount: parseFloat(amount), note }
             : inc
         ));
       }
@@ -213,41 +213,41 @@ function App() {
   };
 
   const exportToPDF = () => {
-  if (allFilteredTransactions.length === 0) return alert('No transactions to export!');
+    if (allFilteredTransactions.length === 0) return alert('No transactions to export!');
 
-  const doc = new jsPDF();
+    const doc = new jsPDF();
 
-  doc.setFontSize(20);
-  doc.text('FinTrack Pro - Finance Report', 14, 20);
+    doc.setFontSize(20);
+    doc.text('FinTrack Pro - Finance Report', 14, 20);
 
-  doc.setFontSize(12);
-  doc.text(`Month: ${selectedMonth}`, 14, 30);
-  doc.text(`Income: ${currency} ${totalIncome.toFixed(2)}`, 14, 37);
-  doc.text(`Expenses: ${currency} ${totalSpent.toFixed(2)}`, 14, 44);
-  doc.text(`Net Savings: ${currency} ${netSavings.toFixed(2)}`, 14, 51);
+    doc.setFontSize(12);
+    doc.text(`Month: ${selectedMonth}`, 14, 30);
+    doc.text(`Income: ${currency} ${totalIncome.toFixed(2)}`, 14, 37);
+    doc.text(`Expenses: ${currency} ${totalSpent.toFixed(2)}`, 14, 44);
+    doc.text(`Net Savings: ${currency} ${netSavings.toFixed(2)}`, 14, 51);
 
-  if (budget > 0) {
-    doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 58);
-  }
+    if (budget > 0) {
+      doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 58);
+    }
 
-  const tableData = allFilteredTransactions.map(item => [
-    item.date,
-    item.type === 'expense' ? 'Expense' : 'Income',
-    item.note,
-    item.category || '-',
-    `${currency} ${item.amount.toFixed(2)}`
-  ]);
+    const tableData = allFilteredTransactions.map(item => [
+      item.date,
+      item.type === 'expense'? 'Expense' : 'Income',
+      item.note,
+      item.category || '-',
+      `${currency} ${item.amount.toFixed(2)}`
+    ]);
 
-  autoTable(doc, {
-    startY: 65,
-    head: [['Date', 'Type', 'Note', 'Category', 'Amount']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: { fillColor: [78, 205, 196] }
-  });
+    autoTable(doc, {
+      startY: 65,
+      head: [['Date', 'Type', 'Note', 'Category', 'Amount']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [78, 205, 196] }
+    });
 
-  doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
-};
+    doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
+  };
 
   const getDateFilteredItems = (items) => {
     const now = new Date();
@@ -267,9 +267,9 @@ function App() {
 
   const filteredExpenses = getDateFilteredItems(expenses).filter(exp => {
     const matchesSearch = exp.note.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         exp.category.toLowerCase().includes(searchQuery.toLowerCase());
+      exp.category.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMonth = selectedMonth === 'All' ||
-                        new Date(exp.id).toLocaleString('default', { month: 'long', year: 'numeric' }) === selectedMonth;
+      new Date(exp.id).toLocaleString('default', { month: 'long', year: 'numeric' }) === selectedMonth;
     const matchesType = typeFilter === 'all' || typeFilter === 'expense';
     return matchesSearch && matchesMonth && matchesType;
   });
@@ -277,13 +277,13 @@ function App() {
   const filteredIncomes = getDateFilteredItems(incomes).filter(inc => {
     const matchesSearch = inc.note.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMonth = selectedMonth === 'All' ||
-                        new Date(inc.id).toLocaleString('default', { month: 'long', year: 'numeric' }) === selectedMonth;
+      new Date(inc.id).toLocaleString('default', { month: 'long', year: 'numeric' }) === selectedMonth;
     const matchesType = typeFilter === 'all' || typeFilter === 'income';
     return matchesSearch && matchesMonth && matchesType;
   });
 
-  const allFilteredTransactions = [...filteredExpenses.map(e => ({...e, type: 'expense'})),...filteredIncomes.map(i => ({...i, type: 'income'}))]
-  .sort((a, b) => b.id - a.id);
+  const allFilteredTransactions = [...filteredExpenses.map(e => ({...e, type: 'expense' })),...filteredIncomes.map(i => ({...i, type: 'income' }))]
+   .sort((a, b) => b.id - a.id);
 
   const totalSpent = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   const totalIncome = filteredIncomes.reduce((sum, inc) => sum + Number(inc.amount), 0);
@@ -293,8 +293,8 @@ function App() {
 
   const getCategorySpent = (catName) => {
     return filteredExpenses
- .filter(e => e.category === catName)
- .reduce((sum, e) => sum + Number(e.amount), 0);
+     .filter(e => e.category === catName)
+     .reduce((sum, e) => sum + Number(e.amount), 0);
   };
 
   const getCategoryBudgetUsed = (catName) => {
@@ -438,9 +438,9 @@ function App() {
                   <div
                     className={`h-2.5 rounded-full transition-all ${
                       totalSpent >= budget
-                   ? 'bg-red-600'
+                       ? 'bg-red-600'
                         : budgetUsed >= 80
-                   ? 'bg-orange-500'
+                       ? 'bg-orange-500'
                         : 'bg-green-500'
                     }`}
                     style={{ width: `${Math.min(budgetUsed, 100)}%` }}
@@ -485,7 +485,7 @@ function App() {
                         placeholder={cat.name}
                         value={categoryBudgets[cat.name] || ''}
                         onChange={(e) => setCategoryBudgets({
-                     ...categoryBudgets,
+                         ...categoryBudgets,
                           [cat.name]: parseFloat(e.target.value) || 0
                         })}
                         className="p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-xs w-full"
@@ -515,9 +515,9 @@ function App() {
                         <div
                           className={`h-1.5 rounded-full ${
                             catSpent >= catBudget
-                        ? 'bg-red-600'
+                             ? 'bg-red-600'
                               : catUsed >= 80
-                        ? 'bg-orange-500'
+                             ? 'bg-orange-500'
                               : 'bg-green-500'
                           }`}
                           style={{ width: `${Math.min(catUsed, 100)}%` }}
@@ -532,6 +532,16 @@ function App() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               Showing: {selectedMonth} • {allFilteredTransactions.length} transactions
             </p>
+          </div>
+
+          {/* Naye Charts Yahan Aaye Ge - Income vs Expense + Bar Chart */}
+          <div className="mb-6">
+            <Charts
+              transactions={[
+               ...filteredExpenses.map(e => ({...e, type: 'expense' })),
+               ...filteredIncomes.map(i => ({...i, type: 'income' }))
+              ]}
+            />
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
