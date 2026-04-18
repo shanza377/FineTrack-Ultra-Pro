@@ -250,9 +250,9 @@ function App() {
                   📄 Export PDF
                 </button>
                 <button
-                  onClick={() => setShowBudgetInput(!showBudgetInput)}
-                  className="text-xs text-blue-500 hover:underline"
-                >
+                onClick={() => setShowBudgetInput(!showBudgetInput)}
+                className="text-xs text-blue-500 hover:underline"
+            >
                   {budget > 0? 'Edit Budget' : 'Set Budget'}
                 </button>
               </div>
