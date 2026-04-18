@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { FiPlus, FiTrash2, FiSun, FiMoon, FiEdit2 } from 'react-icons/fi';
 import logo from './logo.png';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
@@ -112,7 +114,43 @@ function App() {
     a.click();
     window.URL.revokeObjectURL(url);
   };
+  
+  const exportToPDF = () => {
+  if (filteredExpenses.length === 0) return alert('No expenses to export!');
 
+  const doc = new jsPDF();
+  
+  // Title
+  doc.setFontSize(20);
+  doc.text('FinTrack Pro - Expense Report', 14, 20);
+  
+  // Month + Total
+  doc.setFontSize(12);
+  doc.text(`Month: ${selectedMonth}`, 14, 30);
+  doc.text(`Total Spent: ${currency} ${totalSpent.toFixed(2)}`, 14, 37);
+  if (budget > 0) {
+    doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 44);
+  }
+  
+  // Table
+  const tableData = filteredExpenses.map(exp => [
+    exp.date,
+    exp.note,
+    exp.category,
+    `${currency} ${exp.amount.toFixed(2)}`
+  ]);
+  
+  doc.autoTable({
+    startY: 50,
+    head: [['Date', 'Note', 'Category', 'Amount']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [78, 205, 196] }
+  });
+  
+  // Save
+  doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
+};
   const filteredExpenses = expenses.filter(exp => {
     if (selectedMonth === 'All') return true;
     const expDate = new Date(exp.id);
@@ -204,6 +242,12 @@ function App() {
                   className="text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded"
                 >
                   📊 Export CSV
+                </button>
+                <button 
+                onClick={exportToPDF}
+                className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
+            >
+                  📄 Export PDF
                 </button>
                 <button
                   onClick={() => setShowBudgetInput(!showBudgetInput)}
