@@ -21,7 +21,11 @@ function App() {
   const [budget, setBudget] = useState(() => {
     return parseFloat(localStorage.getItem('fintrack-budget')) || 0;
   });
+  const [categoryBudgets, setCategoryBudgets] = useState(() => {
+    return JSON.parse(localStorage.getItem('fintrack-category-budgets')) || {};
+  });
   const [showBudgetInput, setShowBudgetInput] = useState(false);
+  const [showCategoryBudget, setShowCategoryBudget] = useState(false);
   const [currency, setCurrency] = useState(() => {
     return localStorage.getItem('fintrack-currency') || 'Rs';
   });
@@ -49,6 +53,10 @@ function App() {
   }, [budget]);
 
   useEffect(() => {
+    localStorage.setItem('fintrack-category-budgets', JSON.stringify(categoryBudgets));
+  }, [categoryBudgets]);
+
+  useEffect(() => {
     localStorage.setItem('fintrack-currency', currency);
   }, [currency]);
 
@@ -67,7 +75,7 @@ function App() {
     if (editingId) {
       setExpenses(expenses.map(exp =>
         exp.id === editingId
-         ? {...exp, amount: parseFloat(amount), note, category }
+       ? {...exp, amount: parseFloat(amount), note, category }
           : exp
       ));
       setEditingId(null);
@@ -114,43 +122,40 @@ function App() {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-  
-  const exportToPDF = () => {
-  if (filteredExpenses.length === 0) return alert('No expenses to export!');
 
-  const doc = new jsPDF();
-  
-  // Title
-  doc.setFontSize(20);
-  doc.text('FinTrack Pro - Expense Report', 14, 20);
-  
-  // Month + Total
-  doc.setFontSize(12);
-  doc.text(`Month: ${selectedMonth}`, 14, 30);
-  doc.text(`Total Spent: ${currency} ${totalSpent.toFixed(2)}`, 14, 37);
-  if (budget > 0) {
-    doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 44);
-  }
-  
-  // Table
-  const tableData = filteredExpenses.map(exp => [
-    exp.date,
-    exp.note,
-    exp.category,
-    `${currency} ${exp.amount.toFixed(2)}`
-  ]);
-  
-  doc.autoTable({
-    startY: 50,
-    head: [['Date', 'Note', 'Category', 'Amount']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: { fillColor: [78, 205, 196] }
-  });
-  
-  // Save
-  doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
-};
+  const exportToPDF = () => {
+    if (filteredExpenses.length === 0) return alert('No expenses to export!');
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(20);
+    doc.text('FinTrack Pro - Expense Report', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Month: ${selectedMonth}`, 14, 30);
+    doc.text(`Total Spent: ${currency} ${totalSpent.toFixed(2)}`, 14, 37);
+    if (budget > 0) {
+      doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 44);
+    }
+
+    const tableData = filteredExpenses.map(exp => [
+      exp.date,
+      exp.note,
+      exp.category,
+      `${currency} ${exp.amount.toFixed(2)}`
+    ]);
+
+    doc.autoTable({
+      startY: 50,
+      head: [['Date', 'Note', 'Category', 'Amount']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [78, 205, 196] }
+    });
+
+    doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
+  };
+
   const filteredExpenses = expenses.filter(exp => {
     if (selectedMonth === 'All') return true;
     const expDate = new Date(exp.id);
@@ -160,6 +165,18 @@ function App() {
 
   const totalSpent = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   const budgetUsed = budget > 0? (totalSpent / budget) * 100 : 0;
+
+  const getCategorySpent = (catName) => {
+    return filteredExpenses
+   .filter(e => e.category === catName)
+   .reduce((sum, e) => sum + Number(e.amount), 0);
+  };
+
+  const getCategoryBudgetUsed = (catName) => {
+    const catBudget = categoryBudgets[catName] || 0;
+    const catSpent = getCategorySpent(catName);
+    return catBudget > 0? (catSpent / catBudget) * 100 : 0;
+  };
 
   const chartData = categories.map(cat => ({
     name: cat.name,
@@ -243,16 +260,16 @@ function App() {
                 >
                   📊 Export CSV
                 </button>
-                <button 
-                onClick={exportToPDF}
-                className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
-            >
+                <button
+                  onClick={exportToPDF}
+                  className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
+                >
                   📄 Export PDF
                 </button>
                 <button
-                onClick={() => setShowBudgetInput(!showBudgetInput)}
-                className="text-xs text-blue-500 hover:underline"
-            >
+                  onClick={() => setShowBudgetInput(!showBudgetInput)}
+                  className="text-xs text-blue-500 hover:underline"
+                >
                   {budget > 0? 'Edit Budget' : 'Set Budget'}
                 </button>
               </div>
@@ -282,9 +299,9 @@ function App() {
                   <div
                     className={`h-2.5 rounded-full transition-all ${
                       totalSpent >= budget
-                       ? 'bg-red-600'
+                     ? 'bg-red-600'
                         : budgetUsed >= 80
-                       ? 'bg-orange-500'
+                     ? 'bg-orange-500'
                         : 'bg-green-500'
                     }`}
                     style={{ width: `${Math.min(budgetUsed, 100)}%` }}
@@ -295,13 +312,6 @@ function App() {
                 </p>
               </div>
             )}
-
-            {budget > 0 && totalSpent > budget && (
-              <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg text-sm">
-                ⚠️ Budget exceeded! Rs {(totalSpent - budget).toFixed(2)} over budget
-              </div>
-            )}
-
 
             {budget > 0 && budgetUsed >= 80 && totalSpent < budget && (
               <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400 text-yellow-700 dark:text-yellow-300 px-3 py-2 rounded-lg text-sm mb-2">
@@ -314,6 +324,71 @@ function App() {
                 ⚠️ Alert: 100% Budget Used! Stop Spending
               </div>
             )}
+
+            <div className="mt-4 pt-4 border-t dark:border-gray-700">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-semibold text-sm">Budget by Category</h4>
+                <button
+                  onClick={() => setShowCategoryBudget(!showCategoryBudget)}
+                  className="text-xs text-blue-500 hover:underline"
+                >
+                  {showCategoryBudget? 'Hide' : 'Set Budgets'}
+                </button>
+              </div>
+
+              {showCategoryBudget && (
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {categories.map(cat => (
+                    <div key={cat.name} className="flex items-center gap-1">
+                      <span className="text-sm">{cat.icon}</span>
+                      <input
+                        type="number"
+                        placeholder={cat.name}
+                        value={categoryBudgets[cat.name] || ''}
+                        onChange={(e) => setCategoryBudgets({
+                       ...categoryBudgets,
+                          [cat.name]: parseFloat(e.target.value) || 0
+                        })}
+                        className="p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-xs w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                {categories.map(cat => {
+                  const catBudget = categoryBudgets[cat.name] || 0;
+                  if (catBudget === 0) return null;
+
+                  const catSpent = getCategorySpent(cat.name);
+                  const catUsed = getCategoryBudgetUsed(cat.name);
+
+                  return (
+                    <div key={cat.name}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span>{cat.icon} {cat.name}</span>
+                        <span className="text-gray-500">
+                          {currency} {catSpent.toFixed(0)} / {currency} {catBudget}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full ${
+                            catSpent >= catBudget
+                          ? 'bg-red-600'
+                              : catUsed >= 80
+                          ? 'bg-orange-500'
+                              : 'bg-green-500'
+                          }`}
+                          style={{ width: `${Math.min(catUsed, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               Showing: {selectedMonth} • {filteredExpenses.length} expenses
