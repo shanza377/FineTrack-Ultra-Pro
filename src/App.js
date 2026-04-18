@@ -4,7 +4,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { FiPlus, FiTrash2, FiSun, FiMoon, FiEdit2, FiSearch, FiRefreshCw } from 'react-icons/fi';
 import logo from './logo.png';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
+
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
@@ -212,41 +213,41 @@ function App() {
   };
 
   const exportToPDF = () => {
-    if (allFilteredTransactions.length === 0) return alert('No transactions to export!');
+  if (allFilteredTransactions.length === 0) return alert('No transactions to export!');
 
-    const doc = new jsPDF();
+  const doc = new jsPDF();
 
-    doc.setFontSize(20);
-    doc.text('FinTrack Pro - Finance Report', 14, 20);
+  doc.setFontSize(20);
+  doc.text('FinTrack Pro - Finance Report', 14, 20);
 
-    doc.setFontSize(12);
-    doc.text(`Month: ${selectedMonth}`, 14, 30);
-    doc.text(`Income: ${currency} ${totalIncome.toFixed(2)}`, 14, 37);
-    doc.text(`Expenses: ${currency} ${totalSpent.toFixed(2)}`, 14, 44);
-    doc.text(`Net Savings: ${currency} ${netSavings.toFixed(2)}`, 14, 51);
+  doc.setFontSize(12);
+  doc.text(`Month: ${selectedMonth}`, 14, 30);
+  doc.text(`Income: ${currency} ${totalIncome.toFixed(2)}`, 14, 37);
+  doc.text(`Expenses: ${currency} ${totalSpent.toFixed(2)}`, 14, 44);
+  doc.text(`Net Savings: ${currency} ${netSavings.toFixed(2)}`, 14, 51);
 
-    if (budget > 0) {
-      doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 58);
-    }
+  if (budget > 0) {
+    doc.text(`Budget: ${currency} ${budget.toFixed(2)} | Used: ${Math.floor(budgetUsed)}%`, 14, 58);
+  }
 
-    const tableData = allFilteredTransactions.map(item => [
-      item.date,
-      item.type === 'expense'? 'Expense' : 'Income',
-      item.note,
-      item.category || '-',
-      `${currency} ${item.amount.toFixed(2)}`
-    ]);
+  const tableData = allFilteredTransactions.map(item => [
+    item.date,
+    item.type === 'expense' ? 'Expense' : 'Income',
+    item.note,
+    item.category || '-',
+    `${currency} ${item.amount.toFixed(2)}`
+  ]);
 
-    doc.autoTable({
-      startY: 65,
-      head: [['Date', 'Type', 'Note', 'Category', 'Amount']],
-      body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [78, 205, 196] }
-    });
+  autoTable(doc, {
+    startY: 65,
+    head: [['Date', 'Type', 'Note', 'Category', 'Amount']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [78, 205, 196] }
+  });
 
-    doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
-  };
+  doc.save(`FinTrack_${selectedMonth.replace(' ', '_')}.pdf`);
+};
 
   const getDateFilteredItems = (items) => {
     const now = new Date();
