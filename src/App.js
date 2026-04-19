@@ -1,3 +1,4 @@
+import Landing from './components/Landing';
 import { Analytics } from "@vercel/analytics/react"
 import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -9,6 +10,9 @@ import Charts from './components/charts';
 import CountUp from 'react-countup';
 
 function App() {
+  const [showLanding, setShowLanding] = useState(() => {
+  return !localStorage.getItem('fintrack-visited');
+  });
   const [expenses, setExpenses] = useState(() => {
     return JSON.parse(localStorage.getItem('fintrack-expenses')) || [];
   });
@@ -315,18 +319,31 @@ function App() {
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   }))];
 
+      if (showLanding) {
+      return <Landing onGetStarted={() => {
+        localStorage.setItem('fintrack-visited', 'true');
+        setShowLanding(false);
+      }} />;
+    }
+
   return (
     <div className={darkMode? 'dark' : ''}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 text-gray-900 dark:text-white transition-all duration-500">
         <div className="max-w-6xl mx-auto p-4">
 
           <div className="sticky top-0 z-20 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl py-4 px-4 -mx-4 mb-6 border-b border-white/20 dark:border-gray-700/50 flex justify-between items-center transition-all">
-            <div className="flex items-center gap-3">
-              <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse shadow-lg shadow-purple-500/50 hover:shadow-purple-500/80 hover:scale-110 transition-all duration-300">
-                <img src={logo} alt="FinTrack Ultra Pro Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold">FinTrack Ultra Pro</h1>
-            </div>
+            <button 
+             onClick={() => {
+              localStorage.removeItem('fintrack-visited');
+              setShowLanding(true);
+             }}
+             className="flex items-center gap-3 hover:scale-105 transition-all"
+            >
+             <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse shadow-lg shadow-purple-500/50 hover:shadow-purple-500/80 hover:scale-110 transition-all duration-300">
+              <img src={logo} alt="FinTrack Ultra Pro Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
+             </div>
+             <h1 className="text-2xl md:text-3xl font-bold">FinTrack Ultra Pro</h1>
+            </button>
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md hover:scale-110 transition-all">
               {darkMode? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
