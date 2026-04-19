@@ -324,7 +324,7 @@ function App() {
               <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse">
                 <img src={logo} alt="FinTrack Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold">FinTrack Pro</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">FinTrack Ultra Pro</h1>
             </div>
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
               {darkMode? <FiSun size={20} /> : <FiMoon size={20} />}
