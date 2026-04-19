@@ -322,7 +322,7 @@ function App() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
               <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse">
-                <img src={logo} alt="FinTrack Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
+                <img src={logo} alt="FinTrack Ultra Pro Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
               </div>
               <h1 className="text-2xl md:text-3xl font-bold">FinTrack Ultra Pro</h1>
             </div>
@@ -534,7 +534,6 @@ function App() {
             </p>
           </div>
 
-          {/* Naye Charts Yahan Aaye Ge - Income vs Expense + Bar Chart */}
           <div className="mb-6">
             <Charts
               transactions={[
