@@ -6,6 +6,7 @@ import logo from './logo.png';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Charts from './components/charts';
+import CountUp from 'react-countup';
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
@@ -218,7 +219,7 @@ function App() {
     const doc = new jsPDF();
 
     doc.setFontSize(20);
-    doc.text('FinTrack Pro - Finance Report', 14, 20);
+    doc.text('FinTrack Ultra Pro - Finance Report', 14, 20);
 
     doc.setFontSize(12);
     doc.text(`Month: ${selectedMonth}`, 14, 30);
@@ -316,35 +317,39 @@ function App() {
 
   return (
     <div className={darkMode? 'dark' : ''}>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 text-gray-900 dark:text-white transition-all duration-500">
         <div className="max-w-6xl mx-auto p-4">
 
-          <div className="flex justify-between items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl py-4 px-4 -mx-4 mb-6 border-b border-white/20 dark:border-gray-700/50 flex justify-between items-center transition-all">
             <div className="flex items-center gap-3">
-              <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse">
+              <div className="p-0.5 bg-gradient-to-r from-[#4ECDC4] to-[#8A2BE2] rounded-full animate-pulse shadow-lg shadow-purple-500/50 hover:shadow-purple-500/80 hover:scale-110 transition-all duration-300">
                 <img src={logo} alt="FinTrack Ultra Pro Logo" className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-900 rounded-full p-1" />
               </div>
               <h1 className="text-2xl md:text-3xl font-bold">FinTrack Ultra Pro</h1>
             </div>
-            <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+            <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md hover:scale-110 transition-all">
               {darkMode? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 mb-6 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Total Income</p>
-                <h2 className="text-2xl md:text-3xl font-bold text-green-500">{currency} {totalIncome.toFixed(2)}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-green-500">
+                  {currency} <CountUp end={totalIncome} duration={1.5} decimals={2} separator="," />
+                </h2>
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Total Spent</p>
-                <h2 className="text-2xl md:text-3xl font-bold text-red-500">{currency} {totalSpent.toFixed(2)}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-red-500">
+                  {currency} <CountUp end={totalSpent} duration={1.5} decimals={2} separator="," />
+                </h2>
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Net Savings</p>
                 <h2 className={`text-2xl md:text-3xl font-bold ${netSavings >= 0? 'text-blue-500' : 'text-red-500'}`}>
-                  {currency} {netSavings.toFixed(2)}
+                  {currency} <CountUp end={netSavings} duration={1.5} decimals={2} separator="," />
                 </h2>
                 {totalIncome > 0 && (
                   <p className="text-xs text-gray-500">Savings Rate: {savingsRate.toFixed(0)}%</p>
@@ -354,60 +359,60 @@ function App() {
 
             <div className="flex flex-wrap gap-2 items-center justify-between mb-4">
               <div className="flex gap-2 flex-wrap">
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                  >
-                    <option>Rs</option>
-                    <option>$</option>
-                    <option>€</option>
-                    <option>£</option>
-                    <option>AED</option>
-                    <option>SAR</option>
-                  </select>
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                  >
-                    {availableMonths.map(month => <option key={month}>{month}</option>)}
-                  </select>
-                  <select
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                  >
-                    <option value="all">All Time</option>
-                    <option value="last7days">Last 7 Days</option>
-                    <option value="thismonth">This Month</option>
-                  </select>
-                  <select
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                  >
-                   <option value="all">All Types</option>
-                   <option value="expense">Expenses Only</option>
-                   <option value="income">Income Only</option>
-                  </select>
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="p-2 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-sm"
+                >
+                  <option>Rs</option>
+                  <option>$</option>
+                  <option>€</option>
+                  <option>£</option>
+                  <option>AED</option>
+                  <option>SAR</option>
+                </select>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="p-2 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-sm"
+                >
+                  {availableMonths.map(month => <option key={month}>{month}</option>)}
+                </select>
+                <select
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="p-2 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-sm"
+                >
+                  <option value="all">All Time</option>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="thismonth">This Month</option>
+                </select>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="p-2 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-sm"
+                >
+                  <option value="all">All Types</option>
+                  <option value="expense">Expenses Only</option>
+                  <option value="income">Income Only</option>
+                </select>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={exportToCSV}
-                  className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded"
+                  className="text-xs bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-2 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 >
                   📊 CSV
                 </button>
                 <button
                   onClick={exportToPDF}
-                  className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded"
+                  className="text-xs bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-3 py-2 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 >
                   📄 PDF
                 </button>
                 <button
                   onClick={() => setShowBudgetInput(!showBudgetInput)}
-                  className="text-xs text-blue-500 hover:underline px-2"
+                  className="text-xs text-blue-500 hover:text-blue-600 hover:underline px-2 transition-all"
                 >
                   {budget > 0? 'Edit Budget' : 'Set Budget'}
                 </button>
@@ -421,11 +426,11 @@ function App() {
                   placeholder="Monthly Budget"
                   value={budget || ''}
                   onChange={(e) => setBudget(parseFloat(e.target.value) || 0)}
-                  className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm flex-1"
+                  className="p-2 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-sm flex-1"
                 />
                 <button
                   onClick={() => setShowBudgetInput(false)}
-                  className="bg-green-600 text-white px-3 rounded-lg text-sm"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 rounded-lg text-sm hover:scale-105 transition-all"
                 >
                   Save
                 </button>
@@ -434,14 +439,14 @@ function App() {
 
             {budget > 0 && (
               <div className="mb-2">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md rounded-full h-2.5">
                   <div
-                    className={`h-2.5 rounded-full transition-all ${
+                    className={`h-2.5 rounded-full transition-all duration-500 ${
                       totalSpent >= budget
-                       ? 'bg-red-600'
+                       ? 'bg-gradient-to-r from-red-600 to-pink-600'
                         : budgetUsed >= 80
-                       ? 'bg-orange-500'
-                        : 'bg-green-500'
+                       ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-500'
                     }`}
                     style={{ width: `${Math.min(budgetUsed, 100)}%` }}
                   ></div>
@@ -453,23 +458,23 @@ function App() {
             )}
 
             {budget > 0 && budgetUsed >= 80 && totalSpent < budget && (
-              <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400 text-yellow-700 dark:text-yellow-300 px-3 py-2 rounded-lg text-sm mb-2">
+              <div className="bg-yellow-100/70 dark:bg-yellow-900/30 backdrop-blur-md border border-yellow-400/50 text-yellow-700 dark:text-yellow-300 px-3 py-2 rounded-lg text-sm mb-2">
                 ⚠️ Warning: 80% Budget Used
               </div>
             )}
 
             {budget > 0 && totalSpent >= budget && (
-              <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg text-sm mb-2">
+              <div className="bg-red-100/70 dark:bg-red-900/30 backdrop-blur-md border border-red-400/50 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg text-sm mb-2">
                 ⚠️ Alert: 100% Budget Used! Stop Spending
               </div>
             )}
 
-            <div className="mt-4 pt-4 border-t dark:border-gray-700">
+            <div className="mt-4 pt-4 border-t dark:border-gray-700/50">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-semibold text-sm">Budget by Category</h4>
                 <button
                   onClick={() => setShowCategoryBudget(!showCategoryBudget)}
-                  className="text-xs text-blue-500 hover:underline"
+                  className="text-xs text-blue-500 hover:text-blue-600 hover:underline transition-all"
                 >
                   {showCategoryBudget? 'Hide' : 'Set Budgets'}
                 </button>
@@ -488,7 +493,7 @@ function App() {
                          ...categoryBudgets,
                           [cat.name]: parseFloat(e.target.value) || 0
                         })}
-                        className="p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-xs w-full"
+                        className="p-1 rounded border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-xs w-full"
                       />
                     </div>
                   ))}
@@ -511,14 +516,14 @@ function App() {
                           {currency} {catSpent.toFixed(0)} / {currency} {catBudget}
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                      <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md rounded-full h-1.5">
                         <div
-                          className={`h-1.5 rounded-full ${
+                          className={`h-1.5 rounded-full transition-all duration-500 ${
                             catSpent >= catBudget
-                             ? 'bg-red-600'
+                             ? 'bg-gradient-to-r from-red-600 to-pink-600'
                               : catUsed >= 80
-                             ? 'bg-orange-500'
-                              : 'bg-green-500'
+                             ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
+                              : 'bg-gradient-to-r from-green-500 to-emerald-500'
                           }`}
                           style={{ width: `${Math.min(catUsed, 100)}%` }}
                         ></div>
@@ -543,20 +548,20 @@ function App() {
             />
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 mb-6 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
             <h3 className="text-xl font-semibold mb-4">
               {editingId? 'Edit Transaction' : 'Add New Transaction'}
             </h3>
             <div className="flex gap-2 mb-3">
               <button
                 onClick={() => setTransactionType('expense')}
-                className={`flex-1 p-2 rounded-lg font-semibold ${transactionType === 'expense'? 'bg-red-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                className={`flex-1 p-2 rounded-lg font-semibold transition-all ${transactionType === 'expense'? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-md' : 'bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md'}`}
               >
                 - Expense
               </button>
               <button
                 onClick={() => setTransactionType('income')}
-                className={`flex-1 p-2 rounded-lg font-semibold ${transactionType === 'income'? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                className={`flex-1 p-2 rounded-lg font-semibold transition-all ${transactionType === 'income'? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md' : 'bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-md'}`}
               >
                 + Income
               </button>
@@ -567,27 +572,27 @@ function App() {
                 placeholder="Amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="p-3 rounded-lg border dark:bg-gray-700 dark:border-gray-600"
+                className="p-3 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md"
               />
               <input
                 type="text"
                 placeholder="Note - e.g. Biryani"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="p-3 rounded-lg border dark:bg-gray-700 dark:border-gray-600"
+                className="p-3 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md"
               />
               {transactionType === 'expense' && (
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="p-3 rounded-lg border dark:bg-gray-700 dark:border-gray-600"
+                  className="p-3 rounded-lg border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md"
                 >
                   {categories.map(cat => <option key={cat.name} value={cat.name}>{cat.icon} {cat.name}</option>)}
                 </select>
               )}
               <button
                 onClick={addTransaction}
-                className={`${transactionType === 'expense'? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white p-3 rounded-lg flex items-center justify-center gap-2 font-semibold`}
+                className={`${transactionType === 'expense'? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'} text-white p-3 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200`}
               >
                 <FiPlus /> {editingId? 'Update' : 'Add'}
               </button>
@@ -611,14 +616,14 @@ function App() {
                     max="28"
                     value={recurringDay}
                     onChange={(e) => setRecurringDay(e.target.value)}
-                    className="w-16 p-1 rounded border dark:bg-gray-700 dark:border-gray-600"
+                    className="w-16 p-1 rounded border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md"
                   />
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6">
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg p-4 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 mb-6 hover:shadow-2xl transition-all duration-300">
             <div className="flex items-center gap-2">
               <FiSearch className="text-gray-400" />
               <input
@@ -632,20 +637,20 @@ function App() {
           </div>
 
           {recurringTransactions.length > 0 && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl shadow-lg mb-6 border border-blue-200 dark:border-blue-800">
+            <div className="bg-blue-50/70 dark:bg-blue-900/20 backdrop-blur-lg p-4 rounded-2xl shadow-xl mb-6 border border-blue-200/50 dark:border-blue-800/50 hover:shadow-2xl transition-all duration-300">
               <h4 className="font-semibold mb-2 flex items-center gap-2">
                 <FiRefreshCw /> Active Recurring Transactions
               </h4>
               <div className="space-y-2">
                 {recurringTransactions.map(rec => (
-                  <div key={rec.id} className="flex justify-between items-center text-sm bg-white dark:bg-gray-800 p-2 rounded">
+                  <div key={rec.id} className="flex justify-between items-center text-sm bg-white/50 dark:bg-gray-800/50 backdrop-blur-md p-2 rounded-lg">
                     <span>
                       {rec.type === 'expense'? '🔴' : '🟢'} {rec.note} - {currency} {rec.amount}
                       {rec.type === 'expense' && ` • ${rec.category}`}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">Day {rec.day}</span>
-                      <button onClick={() => deleteRecurring(rec.id)} className="text-red-500 hover:text-red-700">
+                      <button onClick={() => deleteRecurring(rec.id)} className="text-red-500 hover:text-red-700 hover:scale-110 transition-all">
                         <FiTrash2 size={14} />
                       </button>
                     </div>
@@ -656,7 +661,7 @@ function App() {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
               <h3 className="text-xl font-semibold mb-4">Spending Breakdown</h3>
               {chartData.length > 0? (
                 <ResponsiveContainer width="100%" height={300}>
@@ -675,11 +680,11 @@ function App() {
               )}
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
               <h3 className="text-xl font-semibold mb-4">Recent Transactions</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {allFilteredTransactions.length > 0? allFilteredTransactions.map(item => (
-                  <div key={`${item.type}-${item.id}`} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div key={`${item.type}-${item.id}`} className="flex justify-between items-center p-3 bg-gray-50/50 dark:bg-gray-700/50 backdrop-blur-md rounded-lg hover:scale-[1.02] transition-all">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">
                         {item.type === 'expense'? categories.find(c => c.name === item.category)?.icon : '💰'}
@@ -695,17 +700,17 @@ function App() {
                       <p className={`font-bold ${item.type === 'expense'? 'text-red-500' : 'text-green-500'}`}>
                         {item.type === 'expense'? '-' : '+'} {currency} {item.amount}
                       </p>
-                      <button onClick={() => startEdit(item, item.type)} className="text-blue-500 hover:text-blue-700">
+                      <button onClick={() => startEdit(item, item.type)} className="text-blue-500 hover:text-blue-700 hover:scale-110 transition-all">
                         <FiEdit2 />
                       </button>
-                      <button onClick={() => deleteTransaction(item.id, item.type)} className="text-red-500 hover:text-red-700">
+                      <button onClick={() => deleteTransaction(item.id, item.type)} className="text-red-500 hover:text-red-700 hover:scale-110 transition-all">
                         <FiTrash2 />
                       </button>
                     </div>
                   </div>
                 )) : (
                   <p className="text-gray-500 text-center py-10">No transactions found</p>
-                )}
+                    )}
               </div>
             </div>
           </div>
