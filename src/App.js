@@ -353,44 +353,44 @@ function App() {
             </div>
 
             <div className="flex flex-wrap gap-2 items-center justify-between mb-4">
-              <div className="flex gap-2">
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                >
-                  <option>Rs</option>
-                  <option>$</option>
-                  <option>€</option>
-                  <option>£</option>
-                  <option>AED</option>
-                  <option>SAR</option>
-                </select>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                >
-                  {availableMonths.map(month => <option key={month}>{month}</option>)}
-                </select>
-                <select
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                >
-                  <option value="all">All Time</option>
-                  <option value="last7days">Last 7 Days</option>
-                  <option value="thismonth">This Month</option>
-                </select>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
-                >
-                  <option value="all">All Types</option>
-                  <option value="expense">Expenses Only</option>
-                  <option value="income">Income Only</option>
-                </select>
+              <div className="flex gap-2 flex-wrap">
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  >
+                    <option>Rs</option>
+                    <option>$</option>
+                    <option>€</option>
+                    <option>£</option>
+                    <option>AED</option>
+                    <option>SAR</option>
+                  </select>
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  >
+                    {availableMonths.map(month => <option key={month}>{month}</option>)}
+                  </select>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  >
+                    <option value="all">All Time</option>
+                    <option value="last7days">Last 7 Days</option>
+                    <option value="thismonth">This Month</option>
+                  </select>
+                  <select
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value)}
+                    className="p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  >
+                   <option value="all">All Types</option>
+                   <option value="expense">Expenses Only</option>
+                   <option value="income">Income Only</option>
+                  </select>
               </div>
               <div className="flex gap-2">
                 <button
