@@ -1,6 +1,6 @@
 import logo from '../logo.png';
 
-function Landing({ onGetStarted }) {
+function Landing({ onGetStarted, showInstallBtn, handleInstall })  {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -18,6 +18,14 @@ function Landing({ onGetStarted }) {
           >
             Launch App
           </button>
+          {showInstallBtn && (
+          <button 
+           onClick={handleInstall}
+            className="mt-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-2 border-purple-500 text-purple-600 dark:text-purple-400 px-8 py-3 rounded-xl text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+         📱 Install App to Home Screen
+         </button>
+          )}
         </nav>
 
         <div className="text-center mb-16">

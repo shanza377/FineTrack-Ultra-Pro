@@ -11,7 +11,7 @@ import CountUp from 'react-countup';
 
 function App() {
   const [showLanding, setShowLanding] = useState(() => {
-  return !localStorage.getItem('fintrack-visited');
+    return!localStorage.getItem('fintrack-visited');
   });
   const [expenses, setExpenses] = useState(() => {
     return JSON.parse(localStorage.getItem('fintrack-expenses')) || [];
@@ -47,6 +47,8 @@ function App() {
   const [currency, setCurrency] = useState(() => {
     return localStorage.getItem('fintrack-currency') || 'Rs';
   });
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -114,6 +116,26 @@ function App() {
     });
   }, [recurringTransactions]);
 
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+    }
+    setDeferredPrompt(null);
+  };
+
   const categories = [
     { name: 'Food', icon: '🍔', color: '#FF6B6B' },
     { name: 'Travel', icon: '✈️', color: '#4ECDC4' },
@@ -147,13 +169,13 @@ function App() {
       if (transactionType === 'expense') {
         setExpenses(expenses.map(exp =>
           exp.id === editingId
-           ? {...exp, amount: parseFloat(amount), note, category }
+          ? {...exp, amount: parseFloat(amount), note, category }
             : exp
         ));
       } else {
         setIncomes(incomes.map(inc =>
           inc.id === editingId
-           ? {...inc, amount: parseFloat(amount), note }
+          ? {...inc, amount: parseFloat(amount), note }
             : inc
         ));
       }
@@ -288,7 +310,7 @@ function App() {
   });
 
   const allFilteredTransactions = [...filteredExpenses.map(e => ({...e, type: 'expense' })),...filteredIncomes.map(i => ({...i, type: 'income' }))]
-   .sort((a, b) => b.id - a.id);
+  .sort((a, b) => b.id - a.id);
 
   const totalSpent = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   const totalIncome = filteredIncomes.reduce((sum, inc) => sum + Number(inc.amount), 0);
@@ -298,8 +320,8 @@ function App() {
 
   const getCategorySpent = (catName) => {
     return filteredExpenses
-     .filter(e => e.category === catName)
-     .reduce((sum, e) => sum + Number(e.amount), 0);
+    .filter(e => e.category === catName)
+    .reduce((sum, e) => sum + Number(e.amount), 0);
   };
 
   const getCategoryBudgetUsed = (catName) => {
@@ -319,12 +341,16 @@ function App() {
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   }))];
 
-      if (showLanding) {
-      return <Landing onGetStarted={() => {
+  if (showLanding) {
+    return <Landing
+      onGetStarted={() => {
         localStorage.setItem('fintrack-visited', 'true');
         setShowLanding(false);
-      }} />;
-    }
+      }}
+      showInstallBtn={showInstallBtn}
+      handleInstall={handleInstall}
+    />;
+  }
 
   return (
     <div className={darkMode? 'dark' : ''}>
@@ -332,7 +358,7 @@ function App() {
         <div className="max-w-6xl mx-auto p-4">
 
           <div className="sticky top-0 z-20 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl py-4 px-4 -mx-4 mb-6 border-b border-white/20 dark:border-gray-700/50 flex justify-between items-center transition-all">
-            <button 
+            <button
              onClick={() => {
               localStorage.removeItem('fintrack-visited');
               setShowLanding(true);
@@ -460,9 +486,9 @@ function App() {
                   <div
                     className={`h-2.5 rounded-full transition-all duration-500 ${
                       totalSpent >= budget
-                       ? 'bg-gradient-to-r from-red-600 to-pink-600'
+                      ? 'bg-gradient-to-r from-red-600 to-pink-600'
                         : budgetUsed >= 80
-                       ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
+                      ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
                         : 'bg-gradient-to-r from-green-500 to-emerald-500'
                     }`}
                     style={{ width: `${Math.min(budgetUsed, 100)}%` }}
@@ -507,7 +533,7 @@ function App() {
                         placeholder={cat.name}
                         value={categoryBudgets[cat.name] || ''}
                         onChange={(e) => setCategoryBudgets({
-                         ...categoryBudgets,
+                        ...categoryBudgets,
                           [cat.name]: parseFloat(e.target.value) || 0
                         })}
                         className="p-1 rounded border dark:bg-gray-700/50 dark:border-gray-600/50 backdrop-blur-md text-xs w-full"
@@ -537,9 +563,9 @@ function App() {
                         <div
                           className={`h-1.5 rounded-full transition-all duration-500 ${
                             catSpent >= catBudget
-                             ? 'bg-gradient-to-r from-red-600 to-pink-600'
+                            ? 'bg-gradient-to-r from-red-600 to-pink-600'
                               : catUsed >= 80
-                             ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
+                            ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
                               : 'bg-gradient-to-r from-green-500 to-emerald-500'
                           }`}
                           style={{ width: `${Math.min(catUsed, 100)}%` }}
@@ -559,8 +585,8 @@ function App() {
           <div className="mb-6">
             <Charts
               transactions={[
-               ...filteredExpenses.map(e => ({...e, type: 'expense' })),
-               ...filteredIncomes.map(i => ({...i, type: 'income' }))
+              ...filteredExpenses.map(e => ({...e, type: 'expense' })),
+              ...filteredIncomes.map(i => ({...i, type: 'income' }))
               ]}
             />
           </div>
